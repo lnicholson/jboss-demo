@@ -1,0 +1,18 @@
+# Deploy WAR file to app servers
+- hosts: all
+  
+  tasks:
+    - name: Deploy war file from Artifactory
+      get_url:
+        url: http://172.17.50.106:8040/artifactory/Jenkins-snapshot/org/jboss/tools/example/springmvc/spring-webapp/0.0.1-SNAPSHOT/{{ war_file }}
+        headers:  "X-JFrog-Art-Api:{{ artifactory_key }}"
+        dest: /opt/jboss-eap/standalone/deployments/spring-webapp.war
+        owner: jboss
+        mode: '0644'
+        
+    - name: restart jboss
+      service: name=jboss enabled=yes state=restarted
+  post_tasks:
+  - name: wait for jboss to restart
+    local_action: wait_for host={{ inventory_hostname }} port=8080 state=started timeout=200
+    sudo: false
