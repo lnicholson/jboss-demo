@@ -1,0 +1,39 @@
+---
+# This playbook will update the application servers behind the load balancer
+# one at a time.
+
+- hosts: all
+  serial: 1
+  
+# These tasks run before applying the update to each host
+#  pre_tasks:
+#  - name: pull the server from the load balancer
+#    haproxy: 'state=disabled backend=app host={{ inventory_hostname }} socket=/var/lib/haproxy/stats'
+#    delegate_to: "{{ item }}"
+#    with_items: '{{ groups.lbservers }}'
+  
+#  roles:
+#  - common
+#  - jboss
+  
+  tasks:
+  - name: deploy new war file
+    get_url:
+      url: http://172.17.50.106:8040/artifactory/list/Jenkins-snapshot/org/jboss/tools/example/springmvc/spring-webapp/0.0.1-SNAPSHOT/{{ war_file }}
+      headers:  "X-JFrog-Art-Api:{{ artifactory_key }}"
+      dest: /opt/jboss-eap/standalone/deployments/spring-webapp.war
+      force: yes
+  
+  - name: restart jboss
+    service: name=jboss enabled=yes state=restarted
+
+  
+  post_tasks:
+  - name: wait for jboss to restart
+    local_action: wait_for host={{ inventory_hostname }} port=8080 state=started timeout=200
+    sudo: false
+  
+#  - name: put the server back in the load balancer
+#    haproxy: 'state=enabled backend=app host={{ inventory_hostname }} socket=/var/lib/haproxy/stats'
+#    delegate_to: "{{ item }}"
+#    with_items: groups.lbservers
