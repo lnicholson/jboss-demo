@@ -1,0 +1,17 @@
+# From Galaxy robertdebock/ansible-role-artifactory
+- src: https://github.com/robertdebock/ansible-role-artifactory
+  version: master
+  scm: git
+  name: ansible-role-artifactory
+
+# From Galaxy redhat-cop/jboss_eap
+- src: https://github.com/redhat-cop/jboss_eap
+  version: master
+  scm: git
+  
+  name: jboss-eap
+# From Galaxy redhat-cop/ansible-role-jboss-common
+- src: https://github.com/redhat-cop/ansible-role-jboss-common
+  version: master
+  scm: git
+  name: jboss-common
