@@ -1,0 +1,23 @@
+#Jboss-EAP
+- hosts: all
+  tasks:
+    - name: Download EPEL Public Key
+      shell: rpm --import http://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
+      tags:
+        - common
+    - import_role:
+        name: ../requirements_roles/ansible-role-java
+      when: ansible_local.automation.meta.machine_class == "jboss-eap"
+    - import_role:
+        name: ../requirements_roles/jboss-eap
+      when: ansible_local.automation.meta.machine_class == "jboss-eap"
+
+#Artifactory
+- hosts: all
+  tasks:
+    - import_role:
+        name: ../requirements_roles/ansible-role-java
+      when: ansible_local.automation.meta.machine_class == "artifactory"
+    - import_role:
+        name: ../requirements_roles/ansible-role-artifactory
+      when: ansible_local.automation.meta.machine_class == "artifactory"
